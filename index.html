@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --firebase-orange: #FFCA28;
+            --firebase-yellow: #FFA000;
+            --firebase-amber: #F57C00;
+        }
+        
+        /* Dark mode support */
+        .dark {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+        }
+        
+        .step-active { 
+            background-color: var(--firebase-yellow);
+            color: #1A1A1A;
+            box-shadow: 0 4px 6px -1px rgba(255, 160, 0, 0.3);
+        }
+        .step-done {
+            background-color: var(--firebase-amber);
+            color: white;
+        }
+        .step-progress {
+            background-color: var(--firebase-yellow);
+        }
+        .editor-firebase {
+            font-family: 'Courier New', monospace;
+            tab-size: 2;
+            caret-color: var(--firebase-yellow);
+            background-color: #292D3E;
+            color: #D4D4D4;
+        }
+        .firebase-icon {
+            color: var(--firebase-yellow);
+        }
+        .firebase-container {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center transition-colors duration-200">
+    <div class="max-w-3xl w-full mx-4 firebase-container py-8">
+        <!-- Progresso -->
+        <div class="mb-12 text-center">
+            <div class="flex items-center justify-center mb-8">
+                <div class="step-active flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all">1</div>
+                <div class="h-[2px] w-16 step-progress mx-2"></div>
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold transition-all">2</div>
+                <div class="h-[2px] w-16 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold transition-all">3</div>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+                <i class="fas fa-fire firebase-icon mr-2"></i>
+                Configuração Firebase
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">Siga os passos para configurar seu projeto</p>
+        </div>
+
+        <!-- Conteúdo das Etapas -->
+        <div class="space-y-6">
+            <!-- Etapa 1 -->
+            <div id="etapa1" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+                        <i class="fas fa-signature firebase-icon text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Nome do Projeto</h2>
+                </div>
+                
+                <div class="space-y-6">
+                    <input type="text" id="nomeProjeto" 
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-base"
+                        placeholder="Ex: Meu Projeto Incrível">
+                    
+                    <button onclick="proximaEtapa(2)" 
+                        class="w-full bg-amber-500 hover:bg-amber-600 text-black py-3 rounded-lg transition-all font-medium">
+                        Continuar <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Etapa 2 -->
+            <div id="etapa2" class="hidden bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+                        <i class="fas fa-code firebase-icon text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Configuração Firebase</h2>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Área de Upload -->
+                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-amber-500 transition-colors duration-200" id="dropZone">
+                        <input type="file" id="jsonUpload" accept=".json" class="hidden">
+                        <label for="jsonUpload" class="cursor-pointer flex flex-col items-center justify-center space-y-2">
+                            <i class="fas fa-file-upload text-3xl text-amber-500"></i>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Clique para enviar seu arquivo google-services.json</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">ou arraste e solte aqui</span>
+                        </label>
+                        <p id="fileName" class="text-sm text-gray-500 dark:text-gray-400 mt-2 hidden"></p>
+                    </div>
+
+                    <div class="relative">
+                        <pre id="editorFirebase" class="editor-firebase p-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-x-auto" contenteditable="true">{
+  "apiKey": "SUA_CHAVE_AQUI",
+  "authDomain": "SEU_PROJETO.firebaseapp.com",
+  "projectId": "SEU_PROJETO_ID",
+  "storageBucket": "SEU_PROJETO.appspot.com",
+  "messagingSenderId": "SEU_SENDER_ID",
+  "appId": "SEU_APP_ID"
+}</pre>
+                        <div class="absolute top-2 right-2 bg-white dark:bg-gray-700 px-2 py-1 rounded-md text-sm text-gray-500 dark:text-gray-300 border dark:border-gray-600">
+                            <i class="fas fa-clipboard mr-1"></i> CTRL+C para copiar
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="voltarEtapa(1)" 
+                            class="w-1/2 px-4 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-all font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i> Voltar
+                        </button>
+                        <button onclick="salvarConfig()" 
+                            class="w-1/2 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-all font-medium">
+                            <i class="fas fa-save mr-2"></i> Salvar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Etapa 3 -->
+            <div id="etapa3" class="hidden bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 text-center">
+                <div class="mb-6">
+                    <div class="w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-3xl firebase-icon"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Tudo Pronto!</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Seu projeto está configurado com sucesso</p>
+                </div>
+                
+                <button onclick="mostrarDashboard()" 
+                    class="w-full bg-amber-500 hover:bg-amber-600 text-black py-3 rounded-lg transition-all font-medium">
+                    <i class="fas fa-rocket mr-2"></i> Acessar Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Funções para navegação entre etapas
+        function proximaEtapa(etapa) {
+            document.querySelectorAll('[id^="etapa"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            document.getElementById('etapa' + etapa).classList.remove('hidden');
+            updateProgressIndicators(etapa);
+        }
+        
+        function voltarEtapa(etapa) {
+            proximaEtapa(etapa);
+        }
+        
+        function updateProgressIndicators(currentStep) {
+            const indicators = document.querySelectorAll('.flex.items-center.justify-center.w-10.h-10.rounded-full');
+            const progressBars = document.querySelectorAll('.h-\\[2px\\].w-16');
+            
+            indicators.forEach((indicator, index) => {
+                const step = index + 1;
+                
+                indicator.classList.remove('step-active', 'step-done', 'bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                
+                if (step < currentStep) {
+                    indicator.classList.add('step-done');
+                } else if (step === currentStep) {
+                    indicator.classList.add('step-active');
+                } else {
+                    indicator.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                }
+            });
+            
+            progressBars.forEach((bar, index) => {
+                const barStep = index + 1;
+                
+                bar.classList.remove('step-progress', 'bg-gray-200', 'dark:bg-gray-700');
+                
+                if (barStep < currentStep) {
+                    bar.classList.add('step-progress');
+                } else {
+                    bar.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                }
+            });
+        }
+
+        // Função para converter o JSON do Firebase
+        function convertFirebaseJson(firebaseJson) {
+            try {
+                const project = firebaseJson.project_info;
+                const client = firebaseJson.client[0];
+                
+                return {
+                    apiKey: client.api_key[0].current_key,
+                    authDomain: `${project.project_id}.firebaseapp.com`,
+                    projectId: project.project_id,
+                    storageBucket: project.storage_bucket,
+                    messagingSenderId: project.project_number,
+                    appId: client.client_info.mobilesdk_app_id.replace(':android:', ':web:')
+                };
+            } catch (error) {
+                console.error('Erro ao converter JSON:', error);
+                return null;
+            }
+        }
+
+        // Configuração do upload de arquivo
+        function setupJsonUpload() {
+            const fileInput = document.getElementById('jsonUpload');
+            const fileNameDisplay = document.getElementById('fileName');
+            const editor = document.getElementById('editorFirebase');
+            const dropZone = document.getElementById('dropZone');
+            
+            // Drag and drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/10');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/10');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/10');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload(fileInput.files[0]);
+                }
+            });
+            
+            // Click to select file
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+            
+            function handleFileUpload(file) {
+                if (file.type !== "application/json") {
+                    alert('Por favor, selecione um arquivo JSON válido');
+                    return;
+                }
+                
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('hidden');
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const firebaseJson = JSON.parse(e.target.result);
+                        const config = convertFirebaseJson(firebaseJson);
+                        
+                        if (config) {
+                            editor.textContent = JSON.stringify(config, null, 2);
+                        } else {
+                            alert('Formato do arquivo JSON não reconhecido');
+                        }
+                    } catch (error) {
+                        alert('Erro ao ler o arquivo JSON: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Função para salvar configuração
+        function salvarConfig() {
+            const projectName = document.getElementById('nomeProjeto').value.trim();
+            if (!projectName) {
+                alert('Por favor, insira um nome para o projeto');
+                return;
+            }
+
+            const configElement = document.getElementById('editorFirebase');
+            let config;
+            
+            try {
+                config = JSON.parse(configElement.textContent);
+            } catch (error) {
+                alert('Erro no formato JSON! Verifique a configuração: ' + error.message);
+                return;
+            }
+
+            const requiredFields = [
+                'apiKey', 'authDomain', 'projectId', 
+                'storageBucket', 'messagingSenderId', 'appId'
+            ];
+            
+            const missingFields = requiredFields.filter(field => {
+                const value = config[field];
+                return !value || (typeof value === 'string' && value.includes('SUA_'));
+            });
+            
+            if (missingFields.length > 0) {
+                alert(`Campos obrigatórios faltando ou não modificados: ${missingFields.join(', ')}`);
+                return;
+            }
+
+            localStorage.setItem('firebaseConfig', JSON.stringify(config));
+            localStorage.setItem('projectName', projectName);
+
+            proximaEtapa(3);
+        }
+
+        function mostrarDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Inicializar o upload quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', setupJsonUpload);
+    </script>
+</body>
+</html>

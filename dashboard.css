@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="dashboard-navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-fire firebase-icon"></i>
+            <span class="text-xl font-semibold text-gray-800" id="tituloDashboard"></span>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h2 class="text-lg font-semibold text-gray-800" id="sidebarTitulo"></h2>
+                <p class="text-sm text-gray-500">Firebase Project</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a data-tab="perfil" class="menu-link active">
+                            <i class="fas fa-home menu-icon"></i>
+                            <span>Perfil do Projeto</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a data-tab="storage" class="menu-link">
+                            <i class="fas fa-database menu-icon"></i>
+                            <span>Armazenamento</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a data-tab="api" class="menu-link">
+                            <i class="fas fa-key menu-icon"></i>
+                            <span>Chaves API</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a data-tab="config" class="menu-link">
+                            <i class="fas fa-cog menu-icon"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <div class="content-header mb-6">
+                <h1 class="text-2xl font-semibold text-gray-800" id="abaTitulo"></h1>
+            </div>
+            
+            <div id="conteudoAbas">
+                <!-- Conteúdo dinâmico será injetado aqui -->
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --firebase-orange: #FFCA28;
+            --firebase-yellow: #FFA000;
+            --firebase-amber: #F57C00;
+        }
+        
+        .dark {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .firebase-icon {
+            color: var(--firebase-yellow);
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 160, 0, 0.1);
+            border-left: 3px solid var(--firebase-yellow);
+        }
+        
+        .dark .menu-item.active {
+            background-color: rgba(255, 160, 0, 0.2);
+        }
+        
+        .menu-item:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .menu-item:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .dashboard-stats-card {
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 10px;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #444;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        firebase: {
+                            yellow: '#FFA000',
+                            orange: '#FFCA28',
+                            amber: '#F57C00',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
+    <!-- Barra de navegação -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full z-10">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-fire text-2xl firebase-icon mr-2"></i>
+                        <span class="font-bold text-xl text-gray-800 dark:text-white" id="tituloDashboard">Firebase Project</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-bell text-gray-600 dark:text-gray-300"></i>
+                            <span class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">2</span>
+                        </button>
+                    </div>
+                    <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-cog text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <div class="h-8 w-8 rounded-full bg-amber-500 text-gray-800 flex items-center justify-center">
+                                <i class="fas fa-user-alt"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex pt-16 h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg z-10 fixed h-full">
+            <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-bold text-gray-700 dark:text-white" id="sidebarTitulo">Firebase Project</h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Firebase Dashboard</p>
+            </div>
+            
+            <nav class="mt-4">
+                <ul class="space-y-1">
+                    <li class="menu-item active px-3 py-3 cursor-pointer" data-tab="perfil">
+                        <a class="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-home text-firebase-yellow w-5"></i>
+                            <span>Perfil do Projeto</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-3 py-3 cursor-pointer" data-tab="storage">
+                        <a class="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-database w-5"></i>
+                            <span>Armazenamento</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-3 py-3 cursor-pointer" data-tab="api">
+                        <a class="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-key w-5"></i>
+                            <span>Chaves API</span>
+                        </a>
+                    </li>
+                    <li class="menu-item px-3 py-3 cursor-pointer" data-tab="config">
+                        <a class="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-cog w-5"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full border-t border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex items-center space-x-3">
+                    <div class="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                        <i class="fas fa-question text-firebase-yellow"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Precisa de ajuda?</p>
+                        <a href="#" class="text-xs text-firebase-yellow hover:underline">Documentação Firebase</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="ml-64 flex-1 p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white" id="abaTitulo">Perfil do Projeto</h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">Gerencie as configurações e recursos do seu projeto Firebase</p>
+            </div>
+            
+            <div id="conteudoAbas" class="space-y-6">
+                <!-- Tab: Perfil do Projeto -->
+                <div id="tab-perfil" class="space-y-6">
+                    <!-- Conteúdo original do perfil -->
+                </div>
+
+                <!-- Tab: Armazenamento Melhorado -->
+                <div id="tab-storage" class="hidden space-y-6">
+                    <!-- Formulário -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold dark:text-white flex items-center gap-2">
+                                <i class="fas fa-plus-circle text-firebase-yellow"></i>
+                                Adicionar Novo Anime
+                            </h2>
+                        </div>
+                        
+                        <form id="formAnime" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Título -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                        <i class="fas fa-heading text-firebase-amber"></i>
+                                        Título do Anime
+                                    </label>
+                                    <input type="text" id="animeTitle" required
+                                        class="w-full rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-firebase-yellow focus:border-firebase-yellow shadow-sm transition duration-200"
+                                        placeholder="Digite o título...">
+                                </div>
+
+                                <!-- Episódios -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                        <i class="fas fa-list-ol text-firebase-amber"></i>
+                                        Total de Episódios
+                                    </label>
+                                    <input type="number" id="animeEpisodes"
+                                        class="w-full rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-firebase-yellow focus:border-firebase-yellow shadow-sm transition duration-200"
+                                        placeholder="Número de episódios...">
+                                </div>
+
+                                <!-- Gênero -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                        <i class="fas fa-tag text-firebase-amber"></i>
+                                        Gênero Principal
+                                    </label>
+                                    <input type="text" id="animeGenre"
+                                        class="w-full rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-firebase-yellow focus:border-firebase-yellow shadow-sm transition duration-200"
+                                        placeholder="Ex: Ação, Romance...">
+                                </div>
+
+                                <!-- Ano -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                        <i class="fas fa-calendar-alt text-firebase-amber"></i>
+                                        Ano de Lançamento
+                                    </label>
+                                    <input type="number" id="animeYear"
+                                        class="w-full rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 focus:ring-firebase-yellow focus:border-firebase-yellow shadow-sm transition duration-200"
+                                        placeholder="Ano de lançamento...">
+                                </div>
+                            </div>
+
+                            <button type="submit" 
+                                    class="w-full bg-firebase-yellow hover:bg-firebase-amber text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Anime
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Lista de Animes -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+                        <div class="p-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                <h2 class="text-xl font-bold dark:text-white flex items-center gap-2">
+                                    <i class="fas fa-list-ul text-firebase-yellow"></i>
+                                    Lista de Animes
+                                </h2>
+                                <div class="flex gap-3">
+                                    <button onclick="clearAnimes()" 
+                                            class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors flex items-center gap-2">
+                                        <i class="fas fa-trash"></i>
+                                        Limpar Tudo
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                                Título
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                                Episódios
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                                Gênero
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                                Ano
+                                            </th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                                Ações
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="animeList" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <!-- Itens serão inseridos aqui via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Mensagem quando lista vazia -->
+                            <div id="emptyState" class="text-center py-12" style="display: none;">
+                                <div class="mb-4 text-gray-400 dark:text-gray-500 text-6xl">
+                                    <i class="fas fa-film"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Nenhum anime cadastrado</h3>
+                                <p class="mt-1 text-sm text-gray-400 dark:text-gray-500">Comece adicionando seu primeiro anime!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboardJS.js">
+        
+    </script>
+</body>
+</html>
